@@ -37,9 +37,10 @@ public class AlternativeBuildChooser extends BuildChooser {
 	                                                  BuildChooserContext context)
 	                            throws GitException, IOException {
 		verbose(listener, "AlternativeBuildChooser.getCandidateRevisions()");
+		Collection<Branch> remoteBranches = git.getRemoteBranches();
 		for (BranchSpec spec : gitSCM.getBranches()) {
 			verbose(listener, "Checking branch spec: {0}", spec);
-			Revision r = findRevision(spec, git, listener, data, context);
+			Revision r = findRevision(spec, git, remoteBranches, listener, data, context);
 			if (r != null) return Collections.singletonList(r);
 		}
 		verbose(listener, "No branch specs matched");
@@ -47,6 +48,7 @@ public class AlternativeBuildChooser extends BuildChooser {
 	}
 
 	private Revision findRevision(BranchSpec spec, GitClient git,
+	                              Collection<Branch> remoteBranches,
 	                              TaskListener listener,
 	                              BuildData data, BuildChooserContext context)
 	                 throws GitException, IOException {
@@ -75,7 +77,7 @@ public class AlternativeBuildChooser extends BuildChooser {
 		if (r != null) return r;
 
 		// get all matching branches
-		List<Branch> branches = spec.filterMatchingBranches(git.getRemoteBranches());
+		List<Branch> branches = spec.filterMatchingBranches(remoteBranches);
 		if (!branches.isEmpty()) {
 			Branch b = branches.get(0);
 			r = new Revision(b.getSHA1());
