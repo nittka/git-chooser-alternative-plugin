@@ -36,7 +36,62 @@ public class AlternativeBuildChooser extends BuildChooser {
 	                                                  BuildData data,
 	                                                  BuildChooserContext context)
 	                            throws GitException, IOException {
-		throw new UnsupportedOperationException("Not yet implemented");
+		verbose(listener, "AlternativeBuildChooser.getCandidateRevisions()");
+		for (BranchSpec spec : gitSCM.getBranches()) {
+			verbose(listener, "Checking branch spec: {0}", spec);
+			Revision r = findRevision(spec, git, listener, data, context);
+			if (r != null) return Collections.singletonList(r);
+		}
+		verbose(listener, "No branch specs matched");
+		return Collections.emptyList();
+	}
+
+	private Revision findRevision(BranchSpec spec, GitClient git,
+	                              TaskListener listener,
+	                              BuildData data, BuildChooserContext context)
+	                 throws GitException, IOException {
+		Revision r = null;
+		ObjectId sha1;
+		if (spec.getName().matches("[0-9a-f]{6,40}")) {
+			// might be a SHA1; strange usage, but we'll allow it
+			try {
+				sha1 = git.revParse(spec.getName());
+				r = new Revision(sha1);
+				r.getBranches().add(new Branch("detached", sha1));
+				verbose(listener, "Found SHA1: {0}", r);
+			} catch (GitException x) {
+				// ignore and look for a branch instead
+			}
+		} else if (!spec.getName().matches(".*[/*].*")) {
+			// might be a tag name
+			Set<String> tags = git.getTagNames(spec.getName());
+			if (!tags.isEmpty()) {
+				sha1 = git.revParse(tags.iterator().next());
+				r = new Revision(sha1);
+				r.getBranches().add(new Branch(spec.getName(), sha1));
+				verbose(listener, "Found tag: {0}", r);
+			}
+		}
+		if (r != null) return r;
+
+		// get all matching branches
+		List<Branch> branches = spec.filterMatchingBranches(git.getRemoteBranches());
+		if (!branches.isEmpty()) {
+			Branch b = branches.get(0);
+			r = new Revision(b.getSHA1());
+			r.getBranches().add(b);
+			verbose(listener, "Found branch: {0}", r);
+		}
+		return r;
+	}
+
+	/**
+	 * Write the message to the listener only when the verbose mode is on.
+	 */
+	private void verbose(TaskListener listener, String format, Object... args) {
+		if (GitSCM.VERBOSE) {
+			listener.getLogger().println(MessageFormat.format(format,args));
+		}
 	}
 
 	@Extension
