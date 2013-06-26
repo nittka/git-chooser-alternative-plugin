@@ -2,5 +2,8 @@
   This view is used to render the installed plugins page.
 -->
 <div>
-  This plugin is a sample to explain how to write a Jenkins plugin.
+  <p>Adds a new build choosing strategy to the
+  <a href="http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin">Jenkins GIT plugin</a>.</p>
+  <p>Treats the configured branches as a list of possible branch names to
+  try; build the first branch to match.</p>
 </div>
