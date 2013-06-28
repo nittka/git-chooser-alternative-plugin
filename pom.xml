@@ -12,6 +12,21 @@
   <packaging>hpi</packaging>
   <name>Alternative build chooser</name>
   <description>Use git branches as an ordered priority list</description>
+  <url>http://wiki.jenkins-ci.org/display/JENKINS/Git+Chooser+Alternative+Plugin</url>
+
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/git-chooser-alternative-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/git-chooser-alternative-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/git-chooser-alternative-plugin</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>kbriggs</id>
+      <name>Kieron Briggs</name>
+      <email>kbriggs@gmail.com</email>
+    </developer>
+  </developers>
 
   <dependencies>
     <dependency>
