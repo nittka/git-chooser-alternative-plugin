@@ -9,6 +9,8 @@ import hudson.plugins.git.GitSCM;
 import hudson.plugins.git.BranchSpec;
 import hudson.plugins.git.AbstractGitTestCase;
 
+import hudson.slaves.EnvironmentVariablesNodeProperty;
+
 /**
  * Test a GitSCM based project with the Alternative build chooser
  *
@@ -48,6 +50,21 @@ public class AlternativeBuildChooserTest extends AbstractGitTestCase {
 			new BranchSpec("master")
 		));
 		
+		initRepo();
+		build(project, Result.SUCCESS, commitFile2);
+	}
+
+	public void testAlternativeVar() throws Exception {
+		hudson.getNodeProperties().replaceBy(Collections.singleton(
+			new EnvironmentVariablesNodeProperty(
+				new EnvironmentVariablesNodeProperty.Entry("VAR_BRANCH", "exist")
+			)
+		));
+		FreeStyleProject project = setupProject(Arrays.asList(
+			new BranchSpec("branch-${VAR_BRANCH}"),
+			new BranchSpec("master")
+		));
+
 		initRepo();
 		build(project, Result.SUCCESS, commitFile2);
 	}

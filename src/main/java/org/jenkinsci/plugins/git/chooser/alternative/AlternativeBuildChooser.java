@@ -1,6 +1,8 @@
 package org.jenkinsci.plugins.git.chooser.alternative;
 
 import hudson.Extension;
+import hudson.EnvVars;
+import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -37,8 +39,19 @@ public class AlternativeBuildChooser extends BuildChooser {
 	                                                  BuildChooserContext context)
 	                            throws GitException, IOException {
 		verbose(listener, "AlternativeBuildChooser.getCandidateRevisions()");
+		EnvVars env = null;
+		if (!isPollCall) try {
+			env = context.actOnBuild(new BuildChooserContext.ContextCallable<AbstractBuild<?,?>, EnvVars>() {
+				public EnvVars invoke(AbstractBuild<?,?> build, hudson.remoting.VirtualChannel channel) throws IOException, InterruptedException {
+					return build.getEnvironment();
+				}
+			});
+		} catch (InterruptedException x) {
+			verbose(listener, "interrupted getting build variables:"+x);
+		}
 		Collection<Branch> remoteBranches = git.getRemoteBranches();
-		for (BranchSpec spec : gitSCM.getBranches()) {
+		for (BranchSpec s : gitSCM.getBranches()) {
+			BranchSpec spec = (env == null ? s : new BranchSpec(env.expand(s.getName())));
 			verbose(listener, "Checking branch spec: {0}", spec);
 			Revision r = findRevision(spec, git, remoteBranches, listener, data, context);
 			if (r != null) return Collections.singletonList(r);
