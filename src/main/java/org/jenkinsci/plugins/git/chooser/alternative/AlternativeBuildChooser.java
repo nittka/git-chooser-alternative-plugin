@@ -2,7 +2,7 @@ package org.jenkinsci.plugins.git.chooser.alternative;
 
 import hudson.Extension;
 import hudson.EnvVars;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.TaskListener;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -37,13 +37,13 @@ public class AlternativeBuildChooser extends BuildChooser {
 	                                                  TaskListener listener,
 	                                                  BuildData data,
 	                                                  BuildChooserContext context)
-	                            throws GitException, IOException {
+	                            throws GitException, IOException, InterruptedException {
 		verbose(listener, "AlternativeBuildChooser.getCandidateRevisions()");
 		EnvVars env = null;
 		if (!isPollCall) try {
-			env = context.actOnBuild(new BuildChooserContext.ContextCallable<AbstractBuild<?,?>, EnvVars>() {
-				public EnvVars invoke(AbstractBuild<?,?> build, hudson.remoting.VirtualChannel channel) throws IOException, InterruptedException {
-					return build.getEnvironment();
+			env = context.actOnBuild(new BuildChooserContext.ContextCallable<Run<?,?>, EnvVars>() {
+				public EnvVars invoke(Run<?,?> run, hudson.remoting.VirtualChannel channel) throws IOException, InterruptedException {
+					return run.getEnvironment();
 				}
 			});
 		} catch (InterruptedException x) {
@@ -64,7 +64,7 @@ public class AlternativeBuildChooser extends BuildChooser {
 	                              Collection<Branch> remoteBranches,
 	                              TaskListener listener,
 	                              BuildData data, BuildChooserContext context)
-	                 throws GitException, IOException {
+	                 throws GitException, IOException, InterruptedException {
 		Revision r = null;
 		ObjectId sha1;
 		if (spec.getName().matches("[0-9a-f]{6,40}")) {
