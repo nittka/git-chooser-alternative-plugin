@@ -1,5 +1,0 @@
-
-Since test classes apparently aren't included in maven dependency
-resolution, these test classes are copied from
-https://github.com/jenkinsci/git-plugin/blob/git-2.3/src/test/java/hudson/plugins/git/
-
