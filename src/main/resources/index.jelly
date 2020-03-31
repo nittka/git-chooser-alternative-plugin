@@ -3,8 +3,10 @@
   This view is used to render the installed plugins page.
 -->
 <div>
-  <p>Adds a new build choosing strategy to the
+  <p>Adds new build choosing strategies to the
   <a href="http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin">Jenkins GIT plugin</a>.</p>
-  <p>Treats the configured branches as a list of possible branch names to
+  <p>Alternative: Treats the configured branches as a list of possible branch names to
   try; build the first branch to match.</p>
+  <p>Most recent commit: Build the latest commit of any branch matching the configured branches.
+  This allows for parametrized builds, selecting a specific branch to build with a wildcard default for scm polling.</p>
 </div>

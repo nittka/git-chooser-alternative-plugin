@@ -1,6 +1,7 @@
-I used the existing git-chooser-alternative plugin as a basis for another build chooser variant.
+I used the existing git-chooser-alternative plugin as a basis for adding another build chooser variant.
 
-Our final goal is to allow for a parametrized build, where you can choose a specific Branch to build.
-In the default-case (`**` build anything or another pattern with wildcards) only one branch should be built, the one with the latest commit.
+Our final goal is to allow for a parametrized build, where you can choose a specific branch to build via a git branch parameter.
+This parameter variable can be used in branches to build.
+In the default-case (`**` build anything or another pattern with wildcards) usually all matching branches would be built, but with the "most recent only" extension only one branch should is built, the one with the latest commit.
 
-The problem is that with multiple branches to build, all are built - even if their last commit was ignored due to a ignore path or ignore poll commit message. The additional behaviour "build single revision only" is not enough because it seems not to sort the branches in the reverse commit order.
+One potential problem to investigate is the combination of commit hooks, ignore polling messages and included/excluded paths.
